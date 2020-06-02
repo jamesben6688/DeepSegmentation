@@ -6,8 +6,8 @@ class Conv3d_ResBlock(tf.keras.layers.Layer):
     def __init__(self, 
                  num_channels,
                  kernel_size=(3, 3, 3),
-                 res_activation="selu",
-                 name="convolution_res_block",
+                 res_activation="relu",
+                 name="conv_res_block",
                  **kwargs):
         super(Conv3d_ResBlock, self).__init__(name=name)
 
@@ -15,16 +15,10 @@ class Conv3d_ResBlock(tf.keras.layers.Layer):
         self.conv_stride = tf.keras.layers.Conv3D(num_channels*2, kernel_size=kernel_size, strides=2, activation=res_activation, padding="same")
 
     def call(self, inputs, training):
-        # print(f"======= {self.name} =========")
         x = inputs
-        # print("inputs shape", inputs.shape)
         x = self.conv_block(x, training=training)
-        # print("x shape", x.shape)
         x = tf.keras.layers.add([x, inputs])
-        # print("res x shape", x.shape)
         down_x = self.conv_stride(x)
-        # print("stride shape", x.shape)
-        # print("================")
         return down_x, x
 
 
@@ -32,31 +26,21 @@ class Up_ResBlock(tf.keras.layers.Layer):
 
     def __init__(self, 
                  num_channels,
+                 num_conv_layers,
                  kernel_size=(3, 3, 3),
-                 res_activation="selu",
-                 name="upsampling_convolution_res_block",
+                 name="upsampling_conv_res_block",
                  **kwargs):
         super(Up_ResBlock, self).__init__(name=name)
 
-        self.up_conv = Up_Conv3D(num_channels=num_channels, kernel_size=kernel_size, **kwargs)
+        self.up_conv = Up_Conv3D(num_channels=num_channels, kernel_size=kernel_size, num_conv_layers=num_conv_layers, **kwargs)
         self.conv_block = Conv3D_Block(num_channels=num_channels, kernel_size=kernel_size, **kwargs)
 
     def call(self, inputs, training):
-        # print("================")
         x, x_highway = inputs
-        # print("x shape", x.shape)
-        # print("highway shape", x_highway.shape)
         x_res_start = self.up_conv(x, training=training)
-        # print("x res start shape", x_res_start.shape)
-
         x_up = tf.keras.layers.concatenate([x_res_start, x_highway], axis=-1)
-        # print("x up shape", x_up.shape)
-        
         x = self.conv_block(x_up)
-        # print("x shape", x.shape)
         x = tf.keras.layers.add([x, x_res_start])
-        # print("x out shape", x.shape)
-        # print("================")
         return x
 
 
@@ -72,7 +56,8 @@ class Conv3D_Block(tf.keras.layers.Layer):
                  dropout_rate=0.25,
                  use_spatial_dropout=True,
                  data_format='channels_last',
-                 name="convolution_block"):
+                 name="convolution_block",
+                 **kwargs):
 
         super(Conv3D_Block, self).__init__(name=name)
 
@@ -118,7 +103,8 @@ class Up_Conv3D(tf.keras.layers.Layer):
                  strides=(2, 2, 2),
                  upsample_size=(2, 2, 2),
                  data_format='channels_last',
-                 name="upsampling_convolution_block"):
+                 name="upsampling_convolution_block",
+                 **kwargs):
 
         super(Up_Conv3D, self).__init__(name=name)
 
