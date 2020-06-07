@@ -17,7 +17,7 @@ from Segmentation.utils.training_utils import plot_train_history_loss, visualise
 
 # Dataset/training options
 flags.DEFINE_integer('seed', 1, 'Random seed.')
-flags.DEFINE_integer('batch_size', 32, 'Batch size per TPU Core / GPU')
+flags.DEFINE_integer('batch_size', 5, 'Batch size per TPU Core / GPU')
 flags.DEFINE_float('base_learning_rate', 3.2e-04, 'base learning rate at the start of training session')
 flags.DEFINE_integer('lr_warmup_epochs', 1, 'No. of epochs for a warmup to the base_learning_rate. 0 for no warmup')
 flags.DEFINE_float('lr_drop_ratio', 0.8, 'Amount to decay the learning rate')
@@ -41,7 +41,7 @@ flags.DEFINE_bool('use_attention', False, 'Whether to use attention mechanism')
 flags.DEFINE_bool('use_dropout', False, 'Whether to use dropout')
 flags.DEFINE_float('dropout_rate', 0.0, 'Dropout rate. Only used if use_dropout is True')
 flags.DEFINE_string('activation', 'relu', 'activation function to be used')
-flags.DEFINE_integer('buffer_size', 5000, 'shuffle buffer size')
+flags.DEFINE_integer('buffer_size', 1000, 'shuffle buffer size')
 flags.DEFINE_integer('kernel_size', 3, 'kernel size to be used')
 flags.DEFINE_integer('num_conv', 2, 'number of convolution layers in each block')
 flags.DEFINE_list('num_filters', [64, 128, 256, 512, 1024], 'number of filters in the model')

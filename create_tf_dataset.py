@@ -1,7 +1,8 @@
 from Segmentation.utils.data_loader import create_OAI_dataset
 
 if __name__ == "__main__":
-    folder = 'valid'
+
+    folder = 'train'
     use_2d = True
 
     train = (folder == 'train')
